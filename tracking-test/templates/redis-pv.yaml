@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.redis.pv.name }}
+  labels:
+    type: {{ .Values.redis.pv.type }}
+    app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: {{ .Values.redis.pv.storageClassName }}
+  capacity:
+    storage: {{ .Values.redis.pv.capacity }}
+  accessModes:
+    - {{ .Values.redis.pv.accessMode }}
+  hostPath:
+    path: {{ .Values.redis.pv.hostPath }}
+    type: {{ .Values.redis.pv.hostType }}

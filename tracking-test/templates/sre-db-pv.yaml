@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.db.pv.name }}
+  labels:
+    type: {{ .Values.db.pv.labelType }}
+    app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: {{ .Values.db.storageClassName }}
+  capacity:
+    storage: {{ .Values.db.pv.capacity }}
+  accessModes: {{ .Values.db.pv.accessModes }}
+  hostPath:
+    path: {{ .Values.db.pv.path }}
+    type: {{ .Values.db.pv.hostType }}

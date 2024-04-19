@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.webSrv.deployment.name }}
+spec:
+  replicas: {{ .Values.webSrv.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.webSrv.deployment.label }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.webSrv.deployment.label }}
+    spec:
+      initContainers:
+        - name: init-config
+          image: busybox
+          command: ['/bin/sh', '-c', 'cat /config/api.env > /combined/api.env && echo "DB_PASSWORD=$DB_PASSWORD" >> /combined/api.env']
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+            - name: combined-config
+              mountPath: /combined
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dbSecret.name }}
+                  key: password
+      containers:
+        - name: web-srv
+          image: {{ .Values.webSrv.container.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.webSrv.container.port }}
+          volumeMounts:
+            - name: combined-config
+              mountPath: /config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.webSrv.configMap.name }}
+            items:
+              - key: api.env
+                path: api.env
+        - name: combined-config
+          emptyDir: {}

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.redis.statefulSet.name }}
+spec:
+  serviceName: {{ .Values.redis.statefulSet.serviceName }}
+  replicas: {{ .Values.redis.statefulSet.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.redis.statefulSet.label }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.redis.statefulSet.label }}
+    spec:
+      containers:
+        - name: {{ .Values.redis.container.name }}
+          image: {{ .Values.redis.container.image }}
+          ports:
+            - containerPort: {{ .Values.redis.container.port }}
+          volumeMounts:
+            - name: {{ .Values.redis.volume.name }}
+              mountPath: {{ .Values.redis.volume.mountPath }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Values.redis.volume.name }}
+      spec:
+        accessModes: {{ .Values.redis.volume.accessModes }}
+        storageClassName: {{ .Values.redis.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.redis.volume.storage }}

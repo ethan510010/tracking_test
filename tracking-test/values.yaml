@@ -1,0 +1,85 @@
+# Storage class configurations
+storageClass:
+  name: "local-storage"
+  provisioner: "kubernetes.io/no-provisioner"
+  volumeBindingMode: "WaitForFirstConsumer"
+
+# Redis configurations
+redis:
+  pv:
+    name: "redis-pv"
+    type: "local"
+    storageClassName: "local-storage"
+    capacity: "1Gi"
+    accessMode: "ReadWriteOnce"
+    hostPath: "/mnt/data/redis"
+    hostType: "DirectoryOrCreate"
+  statefulSet:
+    name: "redis"
+    serviceName: "redis"
+    replicas: 1
+    label: "redis"
+  container:
+    name: "redis"
+    image: "redis:latest"
+    port: 6379
+  volume:
+    name: "redis-data"
+    mountPath: "/data"
+    accessModes: ["ReadWriteOnce"]
+    storage: "1Gi"
+  service:
+    name: "redis"
+    port: 6379
+    targetPort: 6379
+  storageClassName: "local-storage"
+
+# DB Persistent Volume configurations
+db:
+  pv:
+    name: "sre-db-pv"
+    labelType: "local"
+    capacity: "1Gi"
+    accessModes: ["ReadWriteOnce"]
+    path: "/mnt/data/sre-db"
+    hostType: "DirectoryOrCreate"
+  storageClassName: "local-storage"
+
+  statefulSet:
+    name: "sre-db"
+    serviceName: "sre-db"
+    replicas: 1
+    label: "sre-db"
+  container:
+    name: "mysql"
+    image: "ethan510010/sre-db"
+    port: 3306
+  volume:
+    name: "mysql-data"
+    mountPath: "/var/lib/mysql"
+    accessModes: ["ReadWriteOnce"]
+    storage: "1Gi"
+  service:
+    name: "sre-db"
+    port: 3306
+    targetPort: 3306
+
+dbSecret:
+  name: "mysql-root-password"
+
+webSrv:
+  configMap:
+    name: "web-srv-config"
+  deployment:
+    name: "web-srv"
+    replicas: 1
+    label: "web-srv"
+  container:
+    name: "web-srv"
+    image: "ethan510010/sre-web:v6.3"
+    port: 5000
+  service:
+    name: "web-srv"
+    port: 80
+    targetPort: 5000
+    type: ClusterIP

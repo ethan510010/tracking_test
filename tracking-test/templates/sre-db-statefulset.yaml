@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.db.statefulSet.name }}
+spec:
+  serviceName: {{ .Values.db.statefulSet.serviceName }}
+  replicas: {{ .Values.db.statefulSet.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.db.statefulSet.label }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.db.statefulSet.label }}
+    spec:
+      containers:
+      - name: {{ .Values.db.container.name }}
+        image: {{ .Values.db.container.image }}
+        ports:
+        - containerPort: {{ .Values.db.container.port }}
+        volumeMounts:
+        - name: {{ .Values.db.volume.name }}
+          mountPath: {{ .Values.db.volume.mountPath }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.dbSecret.name }}
+              key: password
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.db.volume.name }}
+    spec:
+      storageClassName: {{ .Values.db.storageClassName }}
+      accessModes: {{ .Values.db.volume.accessModes }}
+      resources:
+        requests:
+          storage: {{ .Values.db.volume.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.db.service.name }}
+spec:
+  ports:
+  - port: {{ .Values.db.service.port }}
+    targetPort: {{ .Values.db.service.targetPort }}
+  selector:
+    app: {{ .Values.db.statefulSet.label }}
+  clusterIP: None
