@@ -1,0 +1,56 @@
+name: Helm Chart Update Notification
+
+on:
+  pull_request:
+    branches:
+      - master
+      - main
+    paths:
+      - 'tracking-test/**'
+    types:
+      - closed  
+
+jobs:
+  merged-and-notification:
+    if: github.event.pull_request.merged == true
+    name: Notify Discord
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Notify Discord for Approval
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: 'Helm chart has been updated in tracking-test. Please check and sync manually in Argo CD.'
+
+
+      - name: Manual Approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ethan510010
+          minimum-approvals: 1    
+  
+  argocd-sync:
+    if: github.event.pull_request.merged == true
+    needs: merged-and-notification
+    name: Sync to Argo CD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Install Argo CD CLI
+        run: |
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
+
+      
+      - name: Sync to Argo CD
+        run: |
+          argocd login https://e394-124-218-60-26.ngrok-free.app --name admin --password ${{ secrets.ARGOCD_PASSWORD }} --insecure
+          argocd app sync tracking-test
