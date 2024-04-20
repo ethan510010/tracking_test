@@ -20,7 +20,8 @@ import (
 
 func (s *Server) health(c echo.Context) error {
 	c.Echo().Logger.SetLevel(log.INFO)
-	return c.String(http.StatusOK, "OK")
+	result := "OK"
+	return c.String(http.StatusOK, result)
 }
 
 func (s *Server) queryHandler(c echo.Context) error {
