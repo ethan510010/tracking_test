@@ -72,7 +72,7 @@ webSrv:
     name: "web-srv-config"
   deployment:
     name: "web-srv"
-    replicas: 1
+    replicas: 2
     label: "web-srv"
   container:
     name: "web-srv"
