@@ -58,5 +58,5 @@ jobs:
       
       - name: Sync to Argo CD
         run: |
-          argocd login https://e394-124-218-60-26.ngrok-free.app --name admin --password ${{ secrets.ARGOCD_PASSWORD }}
+          argocd login ${{ env.ARGO_SERVER }} --name admin --password ${{ secrets.ARGOCD_PASSWORD }}
           argocd app sync tracking-test
