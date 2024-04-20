@@ -62,8 +62,7 @@ jobs:
       - name: Build image
         run: |
           docker buildx create --use
-          docker buildx build --platform linux/amd64 --tag ethan510010/sre-web:${{ github.ref_name }}-amd64 -f Dockerfile . --load
-          docker buildx build --platform linux/arm64 --tag ethan510010/sre-web:${{ github.ref_name }}-arm64 -f Dockerfile . --load
+          docker buildx build --platform linux/amd64 --tag ethan510010/sre-web:${{ github.ref_name }} -f Dockerfile . --load
       
       - name: Scan Docker image with Trivy
         uses: aquasecurity/trivy-action@master
