@@ -205,15 +205,21 @@ func assembleQueryData(cacheData map[string]string) *QueryData {
 			data.EstimatedDelivery = val
 		case "details":
 			var details []QueryDetail
-			json.Unmarshal([]byte(val), &details)
+			if err := json.Unmarshal([]byte(val), &details); err != nil {
+				return nil
+			}
 			data.Details = details
 		case "recipient":
 			var recipient QueryRecipient
-			json.Unmarshal([]byte(val), &recipient)
+			if err := json.Unmarshal([]byte(val), &recipient); err != nil {
+				return nil
+			}
 			data.Recipient = recipient
 		case "current_location":
 			var currentLocation QueryCurrentLocation
-			json.Unmarshal([]byte(val), &currentLocation)
+			if err := json.Unmarshal([]byte(val), &currentLocation); err != nil {
+				return nil
+			}
 			data.CurrentLocation = currentLocation
 		}
 	}
