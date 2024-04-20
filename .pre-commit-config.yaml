@@ -1,4 +1,20 @@
 repos:
+  - repo: local
+    hooks:
+      - id: golangci-lint-custom
+        name: GolangCI-Lint Custom
+        entry: golangci-lint run ./...
+        language: golang
+        files: '.*\.go$'
+        pass_filenames: false
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: trailing-whitespace
+        files: \.go$
+      - id: end-of-file-fixer
+        files: \.go$
+
   - repo: https://github.com/onedr0p/sops-pre-commit
     rev: v2.1.0
     hooks:
