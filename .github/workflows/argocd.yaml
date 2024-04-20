@@ -10,6 +10,12 @@ on:
     types:
       - closed  
 
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+
 jobs:
   merged-and-notification:
     if: github.event.pull_request.merged == true
@@ -32,7 +38,7 @@ jobs:
         with:
           secret: ${{ github.TOKEN }}
           approvers: ethan510010
-          minimum-approvals: 1    
+          minimum-approvals: 1   
   
   argocd-sync:
     if: github.event.pull_request.merged == true
