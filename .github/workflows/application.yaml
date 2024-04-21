@@ -7,13 +7,15 @@ on:
     tags:
       - "v*"
     paths-ignore:
-      - "tracking-test/**" 
+      - "tracking-test/**"
+      - ".github/**"
   
   pull_request:
     branches:
       - "*"
     paths-ignore:
       - "tracking-test/**"
+      - ".github/**"
 
 permissions:
   id-token: write
